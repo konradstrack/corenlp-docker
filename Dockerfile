@@ -1,4 +1,4 @@
-FROM java:8
+FROM java:8-jre-alpine
 
 ENV CORENLP_ARCHIVE_VERSION=2017-06-09
 ENV CORENLP_ARCHIVE=stanford-corenlp-full-${CORENLP_ARCHIVE_VERSION}.zip \
@@ -6,13 +6,15 @@ ENV CORENLP_ARCHIVE=stanford-corenlp-full-${CORENLP_ARCHIVE_VERSION}.zip \
   CORENLP_PATH=/corenlp \
   CORENLP_SHA1_PATH=corenlp.sha1
 
-RUN wget http://nlp.stanford.edu/software/$CORENLP_ARCHIVE \
-  && echo "$CORENLP_SHA1SUM $CORENLP_ARCHIVE" > corenlp.sha1 \
+RUN apk add -U --no-cache wget \
+  && wget http://nlp.stanford.edu/software/$CORENLP_ARCHIVE \
+  && echo "$CORENLP_SHA1SUM  $CORENLP_ARCHIVE" > corenlp.sha1 \
   && sha1sum -c corenlp.sha1 \
   && unzip $CORENLP_ARCHIVE \
   && mv $(basename ../$CORENLP_ARCHIVE .zip) $CORENLP_PATH \
   && rm $CORENLP_ARCHIVE \
-  && rm corenlp.sha1
+  && rm corenlp.sha1 \
+  && apk del wget
 
 WORKDIR $CORENLP_PATH
 
